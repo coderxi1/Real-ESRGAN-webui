@@ -64,7 +64,6 @@ def restore_image(img, model_name, denoise_strength, outscale, tile, tile_pad, p
         bg_upsampler=upsampler)
   try:
     if face_enhance:
-      img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
       _, _, output = face_enhancer.enhance(img, has_aligned=False, only_center_face=False, paste_back=True)
     else:
       output, _ = upsampler.enhance(img, outscale=outscale,alpha_upsampler=alpha_upsampler)
