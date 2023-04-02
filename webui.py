@@ -35,15 +35,17 @@ models = {
   "realesr-general-x4v3": lambda: (SRVGGNetCompact(num_in_ch=3, num_out_ch=3, num_feat=64, num_conv=32, upscale=4, act_type="prelu"), 4, ["https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-general-wdn-x4v3.pth", "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-general-x4v3.pth"]),
 }
 
+REAL_ESRGAN_DIR = osp.join(osp.dirname(osp.abspath(__file__)), 'Real-ESRGAN')
+
 def restore_image(img, model_name, denoise_strength, outscale, tile, tile_pad, pre_pad, face_enhance, fp32, alpha_upsampler, gpu_id):
   output = None
   model, netscale, file_url = models[model_name]()
-  model_path = os.path.join('Real-ESRGAN','weights', model_name + '.pth')
-  if not os.path.isfile(model_path):
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+  model_path = osp.join(REAL_ESRGAN_DIR,'weights', model_name + '.pth')
+  if not osp.isfile(model_path):
+    
     for url in file_url:
       # model_path will be updated
-      model_path = load_file_from_url(url=url, model_dir=os.path.join(ROOT_DIR, 'Real-ESRGAN', 'weights'), progress=True, file_name=None)
+      model_path = load_file_from_url(url=url, model_dir=osp.join(REAL_ESRGAN_DIR, 'weights'), progress=True, file_name=None)
 
   # use dni to control the denoise strength
   dni_weight = None
@@ -57,7 +59,7 @@ def restore_image(img, model_name, denoise_strength, outscale, tile, tile_pad, p
   if face_enhance:  # Use GFPGAN for face enhancement
     from gfpgan import GFPGANer
     face_enhancer = GFPGANer(
-        model_path='https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth',
+        model_path=load_file_from_url(url='https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth', model_dir=osp.join(REAL_ESRGAN_DIR, 'gfpgan/weights'), progress=True, file_name=None),
         upscale=outscale,
         arch='clean',
         channel_multiplier=2,
@@ -142,7 +144,7 @@ with gr.Blocks(title="Real-ESRGAN") as demo:
       with gr.Row():
         with gr.Column():
           image_input = gr.Image(label="Input", image_mode="RGBA").style(height=300)
-          gr.Examples(inputs=image_input,examples=list(map(lambda input_file:os.path.join(os.path.dirname(__file__),"Real-ESRGAN","inputs",input_file),["00003.png","0014.jpg","00017_gray.png","0030.jpg","ADE_val_00000114.jpg","children-alpha.png","OST_009.png","tree_alpha_16bit.png","wolf_gray.jpg"])))
+          gr.Examples(inputs=image_input,examples=list(map(lambda input_file:osp.join(REAL_ESRGAN_DIR, "inputs", input_file),["00003.png","0014.jpg","00017_gray.png","0030.jpg","ADE_val_00000114.jpg","children-alpha.png","OST_009.png","tree_alpha_16bit.png","wolf_gray.jpg"])))
         with gr.Column():
           image_output = gr.Image(label="Output", interactive=False, image_mode="RGBA").style(height=300)
           restore_image_button = gr.Button("Restore", variant="primary")
@@ -150,7 +152,7 @@ with gr.Blocks(title="Real-ESRGAN") as demo:
       with gr.Row():
         with gr.Column():
           video_input = gr.Video(label="Input")
-          gr.Examples(inputs=video_input,examples=[os.path.join(os.path.dirname(__file__),"Real-ESRGAN","inputs","video","onepiece_demo.mp4")])
+          gr.Examples(inputs=video_input,examples=[osp.join(REAL_ESRGAN_DIR, "inputs/video/onepiece_demo.mp4")])
           with gr.Row():
             with gr.Column():
               with gr.Row():
