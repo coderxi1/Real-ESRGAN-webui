@@ -142,6 +142,7 @@ with gr.Blocks(title="Real-ESRGAN") as demo:
       with gr.Row():
         with gr.Column():
           image_input = gr.Image(label="Input", image_mode="RGBA").style(height=300)
+          gr.Examples(inputs=image_input,examples=list(map(lambda input_file:os.path.join(os.path.dirname(__file__),"Real-ESRGAN","inputs",input_file),["00003.png","0014.jpg","00017_gray.png","0030.jpg","ADE_val_00000114.jpg","children-alpha.png","OST_009.png","tree_alpha_16bit.png","wolf_gray.jpg"])))
         with gr.Column():
           image_output = gr.Image(label="Output", interactive=False, image_mode="RGBA").style(height=300)
           restore_image_button = gr.Button("Restore", variant="primary")
@@ -149,6 +150,7 @@ with gr.Blocks(title="Real-ESRGAN") as demo:
       with gr.Row():
         with gr.Column():
           video_input = gr.Video(label="Input")
+          gr.Examples(inputs=video_input,examples=[os.path.join(os.path.dirname(__file__),"Real-ESRGAN","inputs","video","onepiece_demo.mp4")])
           with gr.Row():
             with gr.Column():
               with gr.Row():
