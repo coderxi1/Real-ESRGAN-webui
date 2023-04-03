@@ -76,9 +76,9 @@ def restore_image(img, model_name, denoise_strength, outscale, tile, tile_pad, p
 
 def restore_video(video_path, model_name, denoise_strength, outscale, tile, tile_pad, pre_pad, face_enhance, fp32, alpha_upsampler, gpu_id, fps, ffmpeg_bin, extract_frame_first, num_process_per_gpu):
   output_dir = osp.dirname(video_path)
-  video_name, ext = osp.basename(video_path).split('.',2)
+  video_name, ext = osp.splitext(osp.basename(video_path))
   suffix = str(outscale) + "x." + model_name
-  final_path = osp.join(output_dir,f"{video_name}_{suffix}.{ext}")
+  final_path = osp.join(output_dir,f"{video_name}_{suffix}.mp4")
   fps = fps if len(fps)!=0 else None
 
   if (osp.exists(final_path)):
