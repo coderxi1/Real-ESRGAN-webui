@@ -179,8 +179,8 @@ with gr.Blocks(title="Real-ESRGAN") as demo:
     with gr.Column():
       None
   public_inputs = [model_name, denoise_strength[0], outscale, tile[0], tile_pad[0], pre_pad[0], face_enhance, fp32, alpha_upsampler, gpu_id]
-  restore_image_button.click(fn=restore_image, outputs=image_output, inputs=[image_input, *public_inputs], api_name="restore_image")
-  restore_video_button.click(fn=restore_video, outputs=video_output, inputs=[video_input, *public_inputs, fps, ffmpeg_bin, extract_frame_first, num_process_per_gpu], api_name="restore_video")
+  restore_image_button.click(fn=restore_image, outputs=image_output, inputs=[image_input, *public_inputs])
+  restore_video_button.click(fn=restore_video, outputs=video_output, inputs=[video_input, *public_inputs, fps, ffmpeg_bin, extract_frame_first, num_process_per_gpu])
 
 if __name__ == "__main__":
   import argparse
@@ -195,6 +195,7 @@ if __name__ == "__main__":
   parser.add_argument("--gradio-auth", type=str, help='set gradio authentication like "username:password"; or comma-delimit multiple like "u1:p1,u2:p2,u3:p3"', default=None)
   parser.add_argument("--gradio-auth-path", type=str, help='set gradio authentication file path ex. "/path/to/auth/file" same auth format as --gradio-auth', default=None)
   parser.add_argument("--autolaunch", action='store_true', help="open the webui URL in the system's default browser upon launch", default=False)
+  parser.add_argument("--api", action='store_true', help="use FastAPI", default=False)
   args = parser.parse_args()
 
   if args.server_name:
@@ -210,7 +211,7 @@ if __name__ == "__main__":
       for line in file.readlines():
         gradio_auth_creds += [x.strip() for x in line.split(',') if x.strip()]
 
-  demo.launch(
+  app, local_url, share_url = demo.launch(
     share=args.share,
     server_name=args.server_name,
     server_port=args.port,
@@ -219,4 +220,9 @@ if __name__ == "__main__":
     debug=args.gradio_debug,
     auth=[tuple(cred.split(':')) for cred in gradio_auth_creds] if gradio_auth_creds else None,
     inbrowser=args.autolaunch,
+    prevent_thread_lock=args.api,
   )
+
+  if args.api:
+    from api import Api
+    Api(app).block_thread()
