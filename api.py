@@ -14,7 +14,7 @@ from PIL import Image
 import base64
 from os import path as osp
 from fastapi.responses import StreamingResponse
-
+import re
 
 class Api:
 
@@ -85,6 +85,9 @@ class Api:
       os.makedirs(VIDEO_DIR)
     is_url = video.startswith('http://') or video.startswith('https://')
     is_base64 = video.startswith('data:video/') or video.startswith('data:application/octet-stream;base64,')
+
+    if(video_name!=None):
+      video_name = re.sub(r"[\.\\\/\s\"\']+", "_",video_name)
 
     if is_url:
       video_name_in_url, ext = osp.splitext(osp.basename(urlsplit(video).path))
