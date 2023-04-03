@@ -69,3 +69,6 @@ If the version string includes `+cpu` like `2.0.0+cpu` , it means that you have 
   ```sh
   pip install charset-normalizer==2.1.0
   ```
+
+## API
+use `--api` and see `/docs`
